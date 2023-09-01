@@ -7,6 +7,8 @@ import json
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=FUTURO=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 # IMPLEMENTAÇÃO DO CRUD dentro da função perfil
+
+# Achar metodo de fechar janelas anteriores.
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=GUI=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 
 
@@ -15,21 +17,21 @@ class TelaInicial:
         self.root = root
         self.root.title("Sistema de Login")
 
+        # Utilizado quando APP é inicializado como .EXE para conectar ao banco de dados
         with open('config.json') as config_file:
             config = json.load(config_file)
+
         self.database = config["database"]
         self.conecta_banco = sqlite3.connect(self.database)
         self.criar_tabela()
 
-        self.frame_botao = tk.Frame(root)
-        self.frame_botao.pack(side="left", padx=0, pady=0)
-        self.botao = tk.Button(
-            self.frame_botao, text="Registrar", command=self.adicionar_usuario
+        self.botao = ttk.Button(
+            self.root, text="Registrar", command=self.adicionar_usuario
         )
         self.botao.pack(fill="x", expand=True)
 
-        self.botao = tk.Button(
-            self.frame_botao, text="Logar", command=self.login
+        self.botao = ttk.Button(
+            self.root, text="Logar", command=self.login
         )
         self.botao.pack(fill="x", expand=True)
 
@@ -38,7 +40,6 @@ class TelaInicial:
 
 
 # Função para mudar visibilidade da senha
-
 
     def toggle_password_visibility(self):
         if self.mostrar_senha.get():
@@ -49,12 +50,12 @@ class TelaInicial:
 
 # Função para Criptografar senhas
 
-
     def criptografar_senha(self, senha):
         return hashlib.sha256(senha.encode()).hexdigest()
 
 
 # Função para adicionar usuarios
+
 
     def adicionar_usuario(self):
         nova_janela = tk.Toplevel(root)
@@ -87,7 +88,7 @@ class TelaInicial:
         mostrar_senha_botao.pack()
 
         self.botao_adicionar = ttk.Button(
-            nova_janela, text='Adicionar Usuario', command=self.adicionar_user
+            nova_janela, text='Adicionar Usuario', command=lambda: (self.adicionar_user(), nova_janela.destroy())
         )
         self.botao_adicionar.pack(pady=5)
 
@@ -115,22 +116,51 @@ class TelaInicial:
         mostrar_senha_botao.pack()
 
         self.botao_adicionar = ttk.Button(
-            nova_janela, text='Logar', command=self.verificar_user
+            nova_janela, text='Logar', command=lambda: (self.verificar_user(), nova_janela.destroy())
+            # lambda cria um função anonima, que executar o verificar_user e após fecha a janela
         )
         self.botao_adicionar.pack(pady=5)
 
     # Perfil do usuario
 
-    def perfil(self, user, passoword, passoword_cripto):
+    def perfil(self, user, passoword, id):
         self.perfil_usuario = user
         self.perfil_senha = passoword
-        self.perfil_senhaCripto = passoword_cripto
+        self.perfil_id = id
+
         nova_janela = tk.Toplevel(root)
         nova_janela.title("")
-        nova_janela.geometry("200x200")
+        nova_janela.geometry("350x200")
+
+        self.texto_editar_usuario = ttk.Label(nova_janela, text="Novo Usuário")
+        self.texto_editar_usuario.pack()
+
+        self.entrada_editar_usuario = ttk.Entry(nova_janela)
+        self.entrada_editar_usuario.pack()
+
+        self.texto_editar_email = ttk.Label(nova_janela, text="Novo E-mail")
+        self.texto_editar_email.pack()
+
+        self.entrada_editar_email = ttk.Entry(nova_janela)
+        self.entrada_editar_email.pack()
+
+        self.texto_editar_senha = ttk.Label(nova_janela, text="Nova Senha")
+        self.texto_editar_senha.pack()
+
+        self.entrada_editar_senha = ttk.Entry(nova_janela, show="•")
+        self.entrada_editar_senha.pack()
+
+        mostrar_senha_botao = ttk.Checkbutton(
+            nova_janela, text="Mostrar Senha", variable=self.mostrar_senha, command=self.toggle_password_visibility
+        )
+        mostrar_senha_botao.pack()
+
+        self.mensagem_user = ttk.Label(
+            nova_janela, text="Caixas em brancos será considerado informações anteriores!")
+        self.mensagem_user.pack()
 
         self.editar_info = tk.Button(
-            nova_janela, text="Editar Informações", command=self.edit_info
+            nova_janela, text="Editar Informações", command=lambda: (self.edit_info(), nova_janela.destroy())
         )
         self.editar_info.pack()
 
@@ -146,7 +176,6 @@ class TelaInicial:
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Funções=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 # CRIAR TABELA
 
-
     def criar_tabela(self):
         try:
             comando = """
@@ -160,11 +189,14 @@ class TelaInicial:
 
             self.conecta_banco.execute(comando)
             self.conecta_banco.commit()
-        except:
+
+        except Exception as e:
+            print("ERRO", e)
             self.show_erro()
 
 
 # ADICIONAR NA TABELA
+
 
     def adicionar_user(self):
         try:
@@ -202,33 +234,59 @@ class TelaInicial:
                 self.entrada_email.delete(0, tk.END)
                 self.show_message()
 
-        except:
+        except Exception as e:
+            print("ERRO", e)
             self.show_erro()
 
     def edit_info(self):
         try:
+            # Dados
+            id = self.perfil_id
             usuario = self.perfil_usuario
             senha = self.perfil_senha
-            senha_cripto = self.perfil_senhaCripto
+            senha_criptograda = self.criptografar_senha(senha)
+            novo_usuario = self.entrada_editar_usuario.get()
+            nova_senha = self.entrada_editar_senha.get()
+            nova_senha_criptografa = self.criptografar_senha(nova_senha)
+            novo_email = self.entrada_editar_email.get()
+
+            # Verificação de edição
+            if novo_usuario == "":
+                novo_usuario = usuario
+            if nova_senha == "":
+                nova_senha = senha
+                nova_senha_criptografa = self.criptografar_senha(nova_senha)
+
+            usuario = novo_usuario
 
             cursor = self.conecta_banco.cursor()
 
-            comando = """
+            comando_achar = """
                 SELECT * FROM Usuarios
-                WHERE Usuario = ?
+                WHERE id = ?
                 """
-            cursor.execute(comando, (usuario,))
+            cursor.execute(comando_achar, (id,))
             self.resultado = cursor.fetchall()
             cursor.close()
+            print(self.resultado)
+            id = self.resultado[0][0]
 
-            self.entrada_usuario.delete(0, tk.END)
-            self.entrada_senha.delete(0, tk.END)
-            print("Seu usuario é:" + usuario)
-            print("Seu usuario é:" + senha)
-            print("Seu usuario é:" + senha_cripto)
+            comando_editar = """
+                UPDATE Usuarios
+                SET Usuario = ?, Email = ?, Senha = ?
+                    WHERE id = ?
+                """
+            self.conecta_banco.execute(
+                comando_editar, (novo_usuario, novo_email, nova_senha_criptografa, id))
+            self.conecta_banco.commit()
+            print("Atualização feita com sucesso!")
 
-        except:
-            print("ERRO")
+            self.entrada_editar_usuario.delete(0, tk.END)
+            self.entrada_editar_senha.delete(0, tk.END)
+            self.entrada_editar_email.delete(0, tk.END)
+
+        except Exception as e:
+            print("ERRO", e)
 
 # Verificar Usuario
 
@@ -251,19 +309,21 @@ class TelaInicial:
             self.entrada_usuario.delete(0, tk.END)
             self.entrada_senha.delete(0, tk.END)
 
+            id = self.resultado[0][0]
+
             # Verificador de usuario e senha.
             if self.resultado:
                 if usuario == self.resultado[0][1] and senha_critografada == self.resultado[0][3]:
                     messagebox.showinfo("Mensagem", "Logado com Sucesso!!")
-                    self.perfil(usuario, senha, senha_critografada)
+                    self.perfil(usuario, senha, id)
                 else:
                     messagebox.showerror(
                         "Mensagem", "Usuario ou senha inválido")
             else:
                 print("Erro ao acessar resultados!")
 
-        except:
-            print("ERRO")
+        except Exception as e:
+            print("ERRO", e)
 
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Inicializador=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
