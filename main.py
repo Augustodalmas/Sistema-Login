@@ -6,9 +6,7 @@ import hashlib
 import json
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=FUTURO=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-# IMPLEMENTAÇÃO DO CRUD dentro da função perfil
-
-# Achar metodo de fechar janelas anteriores.
+# Organização de funções e classes
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=GUI=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 
 
@@ -123,10 +121,11 @@ class TelaInicial:
 
     # Perfil do usuario
 
-    def perfil(self, user, passoword, id):
+    def perfil(self, user, passoword, email, id):
         self.perfil_usuario = user
         self.perfil_senha = passoword
         self.perfil_id = id
+        self.perfil_email = email
 
         nova_janela = tk.Toplevel(root)
         nova_janela.title("")
@@ -244,6 +243,7 @@ class TelaInicial:
             id = self.perfil_id
             usuario = self.perfil_usuario
             senha = self.perfil_senha
+            email = self.perfil_email
             senha_criptograda = self.criptografar_senha(senha)
             novo_usuario = self.entrada_editar_usuario.get()
             nova_senha = self.entrada_editar_senha.get()
@@ -256,6 +256,8 @@ class TelaInicial:
             if nova_senha == "":
                 nova_senha = senha
                 nova_senha_criptografa = self.criptografar_senha(nova_senha)
+            if novo_email == "":
+                novo_email = email
 
             usuario = novo_usuario
 
@@ -310,12 +312,13 @@ class TelaInicial:
             self.entrada_senha.delete(0, tk.END)
 
             id = self.resultado[0][0]
+            email = self.resultado[0][2]
 
             # Verificador de usuario e senha.
             if self.resultado:
                 if usuario == self.resultado[0][1] and senha_critografada == self.resultado[0][3]:
                     messagebox.showinfo("Mensagem", "Logado com Sucesso!!")
-                    self.perfil(usuario, senha, id)
+                    self.perfil(usuario, senha, email, id)
                 else:
                     messagebox.showerror(
                         "Mensagem", "Usuario ou senha inválido")
