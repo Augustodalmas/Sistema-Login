@@ -7,32 +7,34 @@ import hashlib
 import json
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=FUTURO=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-# Estilização e ajuste finais
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=GUI=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-
 class tela_inicial:
     def __init__(self, root, banco) -> None:
         self.root = root
-        self.root.config(bg="#cfcfcf")
+        self.root.config(bg="#ffce47")
         root.geometry("350x200")
+        root.resizable(False, False)
         self.root.title("Sistema de Login")
         self.banco_dados = banco
         self.banco_dados.criar_tabela(self)
 
         # Estilização
 
-        # self.imagem = PhotoImage(file=r"Imagens/Usuario.png")
-        # self.imagem_usuario = ttk.Label(root, image=self.imagem, width=20)
-        # self.imagem_usuario.pack()""
+        self.imagem = PhotoImage(file=r"Imagens/Usuario.png")
+        self.imagem_usuario = tk.Label(
+            root, image=self.imagem, bg="#ffce47")
+        self.imagem_usuario.pack()
+
+        # Botões
 
         self.botao = tk.Button(
-            self.root, text="Registrar", command=self.adicionar_usuario)
+            self.root, text="Registrar", command=self.adicionar_usuario, borderwidth=1, highlightbackground="Blue", bg="#ffbb00")
 
-        self.botao.pack(fill="x", expand=True, padx=1, side=tk.LEFT)
+        self.botao.pack(fill="x", expand=True, padx=10, side=tk.LEFT)
 
-        self.botao = tk.Button(self.root, text="Logar", command=self.login)
-        self.botao.pack(fill="x", expand=True, side=tk.RIGHT)
+        self.botao = tk.Button(self.root, text="Logar", command=self.login,
+                               borderwidth=1, highlightbackground="Blue", bg="#ffbb00")
+        self.botao.pack(fill="x", expand=True, side=tk.RIGHT, padx=10)
 
         self.mostrar_senha = tk.BooleanVar()
         self.mostrar_senha.set(False)
@@ -61,42 +63,44 @@ class tela_inicial:
     def criptografar_senha(self, senha):
         return hashlib.sha256(senha.encode()).hexdigest()
 
-
 # Função para adicionar usuarios
-
 
     def adicionar_usuario(self):
         nova_janela = tk.Toplevel(root)
         nova_janela.title("Tela de registro")
         nova_janela.geometry("350x200")
+        nova_janela.resizable(False, False)
+        nova_janela.config(bg="#ffce47")
 
         self.texto_usuario = ttk.Label(
-            nova_janela, text="usuário")
-        self.texto_usuario.pack()
+            nova_janela, text="usuário", background="#ffce47")
+        self.texto_usuario.pack(pady=1)
 
-        self.entrada_usuario = ttk.Entry(nova_janela)
-        self.entrada_usuario.pack()
+        self.entrada_usuario = tk.Entry(nova_janela, background="#ebebeb")
+        self.entrada_usuario.pack(pady=1)
 
         self.texto_email = ttk.Label(
-            nova_janela, text="E-mail")
-        self.texto_email.pack()
+            nova_janela, text="E-mail", background="#ffce47")
+        self.texto_email.pack(pady=1)
 
-        self.entrada_email = ttk.Entry(nova_janela)
-        self.entrada_email.pack()
+        self.entrada_email = tk.Entry(nova_janela, background="#ebebeb")
+        self.entrada_email.pack(pady=1)
 
-        self.texto_senha = ttk.Label(nova_janela, text="Senha:")
-        self.texto_senha.pack()
+        self.texto_senha = ttk.Label(
+            nova_janela, text="Senha:", background="#ffce47")
+        self.texto_senha.pack(pady=1)
 
-        self.entrada_senha = ttk.Entry(nova_janela, show="•")
-        self.entrada_senha.pack()
+        self.entrada_senha = tk.Entry(
+            nova_janela, show="•", background="#ebebeb")
+        self.entrada_senha.pack(pady=1)
 
-        mostrar_senha_botao = ttk.Checkbutton(
-            nova_janela, text="Mostrar Senha", variable=self.mostrar_senha, command=self.toggle_password_visibility
+        mostrar_senha_botao = tk.Checkbutton(
+            nova_janela, text="Mostrar Senha", variable=self.mostrar_senha, command=self.toggle_password_visibility, bg="#ffce47"
         )
-        mostrar_senha_botao.pack()
+        mostrar_senha_botao.pack(pady=1)
 
-        self.botao_adicionar = ttk.Button(
-            nova_janela, text='Adicionar usuário', command=lambda: (self.banco_dados.adicionar_user(self), nova_janela.destroy())
+        self.botao_adicionar = tk.Button(
+            nova_janela, text='Adicionar usuário', command=lambda: (self.banco_dados.adicionar_user(self), nova_janela.destroy()), bg="#ebebeb"
         )
         self.botao_adicionar.pack(pady=5)
 
@@ -108,35 +112,39 @@ class tela_inicial:
         y = (altura_tela - nova_janela.winfo_reqheight()) / 2
 
         nova_janela.geometry("+%d+%d" % (x, y))
+
+#Função da tela de login
 
     def login(self):
         nova_janela = tk.Toplevel(root)
         nova_janela.title("Tela de login")
         nova_janela.geometry("350x200")
+        nova_janela.resizable(False, False)
+        nova_janela.config(bg="#ffce47", pady=30)
 
         self.texto_usuario = ttk.Label(
-            nova_janela, text="usuário")
+            nova_janela, text="usuário", background="#ffce47")
         self.texto_usuario.pack()
 
-        self.entrada_usuario = ttk.Entry(nova_janela)
+        self.entrada_usuario = tk.Entry(nova_janela, bg="#ebebeb")
         self.entrada_usuario.pack()
 
-        self.texto_senha = ttk.Label(nova_janela, text="Senha:")
+        self.texto_senha = ttk.Label(
+            nova_janela, text="Senha:", background="#ffce47")
         self.texto_senha.pack()
 
-        self.entrada_senha = ttk.Entry(nova_janela, show="•")
+        self.entrada_senha = tk.Entry(nova_janela, show="•", bg="#ebebeb")
         self.entrada_senha.pack()
 
-        mostrar_senha_botao_login = ttk.Checkbutton(
-            nova_janela, text="Mostrar Senha", variable=self.mostrar_senha, command=self.toggle_password_visibility
+        mostrar_senha_botao_login = tk.Checkbutton(
+            nova_janela, text="Mostrar Senha", variable=self.mostrar_senha, command=self.toggle_password_visibility, bg="#ffce47"
         )
         mostrar_senha_botao_login.pack()
 
-        self.botao_adicionar = ttk.Button(
-            nova_janela, text='Logar', command=lambda: (self.banco_dados.verificar_user(self, nova_janela))
-            # lambda cria um função anonima, que executar o verificar_user e após fecha a janela
+        self.botao_adicionar = tk.Button(
+            nova_janela, text='Logar', command=lambda: (self.banco_dados.verificar_user(self, nova_janela)), bg="#ebebeb"
         )
-        self.botao_adicionar.pack(pady=5)
+        self.botao_adicionar.pack()
 
         # Centralização de tela
         largura_tela = nova_janela.winfo_screenwidth()
@@ -147,7 +155,7 @@ class tela_inicial:
 
         nova_janela.geometry("+%d+%d" % (x, y))
 
-    # Perfil do usuario
+#Perfil do usuário
 
     def perfil(self, user, passoword, email, id):
         self.perfil_usuario = user
@@ -157,15 +165,32 @@ class tela_inicial:
 
         nova_janela = tk.Toplevel(root)
         nova_janela.title("Perfil usuário")
-        nova_janela.geometry("350x200")
+        nova_janela.geometry("450x200")
+        nova_janela.resizable(False, False)
+        nova_janela.config(bg="#ffce47", pady=10)
 
-        self.editar_info = ttk.Button(nova_janela, text="Editar Informações", command=lambda: self.atualizar_usuario(
-            self.perfil_usuario, self.perfil_senha, self.perfil_id, self.perfil_email))
-        self.editar_info.pack(fill="x", expand=True, side=tk.LEFT)
+        self.imagem_perfil = PhotoImage(file=r"Imagens/Usuario.png")
+        self.imagem_perfil_label = tk.Label(
+            nova_janela, image=self.imagem_perfil, bg="#ffce47")
+        self.imagem_perfil_label.pack(side=tk.LEFT)
 
-        self.editar_info = ttk.Button(nova_janela, text="Excluir Usuario", command=lambda: (self.banco_dados.excluir_user(
-            self, self.perfil_id), nova_janela.destroy()))
-        self.editar_info.pack(fill="x", expand=True, side=tk.RIGHT)
+        self.info_name = tk.Label(
+            nova_janela, text="ID: " + str(id), bg="#ffce47")
+        self.info_name.pack(padx=5)
+        self.info_name = tk.Label(
+            nova_janela, text="Usuário: " + str(user), bg="#ffce47")
+        self.info_name.pack(padx=5)
+        self.info_name = tk.Label(
+            nova_janela, text="E-mail: " + str(email), bg="#ffce47")
+        self.info_name.pack(padx=5)
+
+        self.editar_info = tk.Button(nova_janela, text="Editar Informações", command=lambda: self.atualizar_usuario(
+            self.perfil_usuario, self.perfil_senha, self.perfil_id, self.perfil_email, nova_janela.destroy()), bg="#ebebeb")
+        self.editar_info.pack(fill="x", expand=True, side=tk.LEFT, padx=8)
+
+        self.editar_info = tk.Button(nova_janela, text="Excluir Usuário", command=lambda: (self.banco_dados.excluir_user(
+            self, self.perfil_id), nova_janela.destroy()), bg="#ebebeb")
+        self.editar_info.pack(fill="x", expand=True, side=tk.RIGHT, padx=8)
 
         # Centralização de tela
         largura_tela = nova_janela.winfo_screenwidth()
@@ -176,7 +201,9 @@ class tela_inicial:
 
         nova_janela.geometry("+%d+%d" % (x, y))
 
-    def atualizar_usuario(self, user, passoword, id, email):
+#Função para abrir tela de edição de usuário
+
+    def atualizar_usuario(self, user, passoword, id, email, ignore):
         self.perfil_usuario = user
         self.perfil_senha = passoword
         self.perfil_id = id
@@ -185,33 +212,39 @@ class tela_inicial:
         nova_janela = tk.Toplevel(root)
         nova_janela.title("Editar Informações")
         nova_janela.geometry("350x200")
+        nova_janela.resizable(False, False)
+        nova_janela.config(bg="#ffce47")
 
-        self.texto_editar_usuario = ttk.Label(nova_janela, text="Novo Usuário")
+        self.texto_editar_usuario = tk.Label(
+            nova_janela, text="Novo Usuário", bg="#ffce47")
         self.texto_editar_usuario.pack()
 
-        self.entrada_editar_usuario = ttk.Entry(nova_janela)
+        self.entrada_editar_usuario = tk.Entry(nova_janela, bg="#ebebeb")
         self.entrada_editar_usuario.pack()
 
-        self.texto_editar_email = ttk.Label(nova_janela, text="Novo E-mail")
+        self.texto_editar_email = tk.Label(
+            nova_janela, text="Novo E-mail", bg="#ffce47")
         self.texto_editar_email.pack()
 
-        self.entrada_editar_email = ttk.Entry(nova_janela)
+        self.entrada_editar_email = tk.Entry(nova_janela, bg="#ebebeb")
         self.entrada_editar_email.pack()
 
-        self.texto_editar_senha = ttk.Label(nova_janela, text="Nova Senha")
+        self.texto_editar_senha = tk.Label(
+            nova_janela, text="Nova Senha", bg="#ffce47")
         self.texto_editar_senha.pack()
 
-        self.entrada_editar_senha = ttk.Entry(nova_janela)
+        self.entrada_editar_senha = tk.Entry(nova_janela, bg="#ebebeb")
         self.entrada_editar_senha.pack()
 
-        self.mensagem_user = ttk.Label(
-            nova_janela, text="Caixas em brancos serão consideradas informações anteriores!")
+        self.mensagem_user = tk.Label(
+            nova_janela, text="Caixas em brancos serão consideradas informações anteriores!", bg="#ffce47")
         self.mensagem_user.pack()
 
-        self.editar_info = ttk.Button(
-            nova_janela, text="Editar Informações", command=lambda: (self.banco_dados.edit_user(self, self.perfil_usuario, self.perfil_senha, self.perfil_id, self.perfil_email), nova_janela.destroy())
+        self.editar_info = tk.Button(
+            nova_janela, text="Editar Informações", command=lambda: (self.banco_dados.edit_user(self, self.perfil_usuario, self.perfil_senha, self.perfil_id, self.perfil_email), nova_janela.destroy(), self.perfil(user, passoword, email, id)), bg="#ebebeb"
         )
         self.editar_info.pack()
+        self.show_edit()
 
         largura_tela = nova_janela.winfo_screenwidth()
         altura_tela = nova_janela.winfo_screenheight()
@@ -221,7 +254,7 @@ class tela_inicial:
 
         nova_janela.geometry("+%d+%d" % (x, y))
 
-    # Mensagens ao Usuario
+# Mensagens ao Usuário
 
     def show_message(self):
         messagebox.showinfo("Mensagem", "Ação realizada com sucesso!")
@@ -229,8 +262,12 @@ class tela_inicial:
     def show_erro(self):
         messagebox.showinfo("Mensagem", "Foi encontrado um erro!")
 
+    def show_edit(self):
+        messagebox.showinfo(
+            "Mensagem", "Suas informações seráo atualizadas após reiniciar o aplicativo")
 
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Funções=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Utilização do Banco de dados=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 class banco_manage:
     def __init__(self, tela):
         self.tela = tela
@@ -240,7 +277,7 @@ class banco_manage:
         self.database = config["database"]
         self.conecta_banco = sqlite3.connect(self.database)
 
-    # CRIAR TABELA
+# CRIAR TABELA
     def criar_tabela(self, tela):
         try:
             comando = """
@@ -261,7 +298,6 @@ class banco_manage:
 
 
 # ADICIONAR NA TABELA
-
 
     def adicionar_user(self, tela):
         try:
@@ -302,6 +338,8 @@ class banco_manage:
         except Exception as e:
             print("ERRO", e)
             tela.show_erro()
+
+#Editar usuário da tabela
 
     def edit_user(self, tela, usuario, senha, id, email):
         try:
@@ -351,6 +389,8 @@ class banco_manage:
         except Exception as e:
             print(e)
 
+#Excluir usuário da tabela
+
     def excluir_user(self, tela, id):
         self.remover_id = id
 
@@ -366,7 +406,8 @@ class banco_manage:
         except Exception as e:
             tela.show_erro()
             print(e)
-# Verificar Usuario
+
+# Verificar Usuário
 
     def verificar_user(self, tela, nova_janela):
         try:
@@ -389,17 +430,17 @@ class banco_manage:
             tela.entrada_senha.delete(0, tk.END)
 
             id = self.resultado[0][0]
-            email = self.resultado[0][2]
+            email_achado = self.resultado[0][2]
 
-            # Verificador de usuario e senha.
+            # Verificador de usuário e senha.
             if self.resultado:
-                if usuario == self.resultado[0][1] and senha_critografada == self.resultado[0][3]:
-                    messagebox.showinfo("Mensagem", "Logado com Sucesso!!")
-                    janela.destroy()
-                    tela.perfil(usuario, senha, email, id)
-                else:
-                    messagebox.showerror(
-                        "Mensagem", "Usuario ou senha inválido")
+                    if usuario == self.resultado[0][1] and senha_critografada == self.resultado[0][3]:
+                        messagebox.showinfo("Mensagem", "Logado com Sucesso!!")
+                        janela.destroy()
+                        tela.perfil(usuario, senha, email_achado, id)
+                    else:
+                        messagebox.showerror(
+                            "Mensagem", "Usuario ou senha inválido")
             else:
                 print("Erro ao acessar resultados!")
 
